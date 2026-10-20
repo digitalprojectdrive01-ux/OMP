@@ -1,7 +1,19 @@
 // Phoenix channel client for Supabase Realtime Broadcast (vsn 1.0.0 JSON) — no SDK, no third-party code.
 // The relay only ever carries sealed envelopes (see e2e.js).
 export class Relay {
+  // Same rule as backend/remote/connector.normalize_relay_url: https://<ref>.supabase.co → wss://…/realtime/v1/websocket
+  static normalize(url) {
+    let u = String(url || '').trim();
+    if (!u.includes('://')) u = 'wss://' + u;
+    const p = new URL(u.replace(/^https:/i, 'wss:').replace(/^http:/i, 'ws:'));
+    if (p.protocol === 'ws:' && !['127.0.0.1', 'localhost'].includes(p.hostname)) p.protocol = 'wss:';
+    let path = p.pathname.replace(/\/+$/, '');
+    if (!path.endsWith('/realtime/v1/websocket')) path = (['', '/rest/v1', '/realtime/v1'].includes(path) ? '' : path) + '/realtime/v1/websocket';
+    p.pathname = path;
+    return p.toString();
+  }
   constructor(url, apikey) {
+    url = Relay.normalize(url);
     this.url = url + (url.includes('?') ? '&' : '?') + 'apikey=' + encodeURIComponent(apikey) + '&vsn=1.0.0';
     this.apikey = apikey; this.ref = 0; this.handlers = new Map(); this.joined = new Map(); this.replies = new Map(); this.ws = null;
     this.ready = null; this.onstate = () => {};
