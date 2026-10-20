@@ -18,6 +18,14 @@ export function canon(v) {
 export const ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
 export const normalizeCode = c => String(c || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
 const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+// v0.2: 6-digit check code the OMP administrator types to confirm this phone (same formula as backend/remote/store.verify_code)
+export async function verifyCode(dev, dkx, dsig) {
+  const h = new Uint8Array(await S.digest('SHA-256', te.encode(`verify1|${dev}|${dkx}|${dsig}`)));
+  let n = 0n;
+  for (const b of h.slice(0, 8)) n = (n << 8n) | BigInt(b);
+  const v = String(n % 1000000n).padStart(6, '0');
+  return v.slice(0, 3) + ' ' + v.slice(3);
+}
 export const inviteId = async code => hex(await S.digest('SHA-256', te.encode('inv|' + normalizeCode(code)))).slice(0, 16);
 
 export async function mac(code, ...parts) {
