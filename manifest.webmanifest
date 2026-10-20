@@ -1,0 +1,2 @@
+{"id":"./","name":"OMP Remote","short_name":"OMP Remote","description":"Lịch ca và đăng ký OT từ mạng ngoài","lang":"vi","start_url":"./","scope":"./","display":"standalone","background_color":"#F3F5FA","theme_color":"#13234F",
+ "icons":[{"src":"img/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"img/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},{"src":"img/icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]}
